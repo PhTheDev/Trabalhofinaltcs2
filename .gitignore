@@ -30,3 +30,8 @@ npm-debug.log*
 # Generated
 backend/src/generated
 *.local
+
+# Expo
+.expo
+mobile/.expo
+
