@@ -15,28 +15,15 @@ Trabalhofinaltcs2/
 
 ## Como rodar
 
-Na raiz:
+Na raiz do monorepo:
 
 ```bash
+npm install
 npm run install:all
+npm run dev
 ```
 
-Backend:
-
-```bash
-cp backend/.env.example backend/.env
-cd backend
-npx prisma migrate deploy
-node prisma/seed-demo.js
-npm run start:dev
-```
-
-Frontend (outro terminal):
-
-```bash
-cp frontend/.env.example frontend/.env
-npm run dev:frontend
-```
+Isso sobe o backend na porta `8000` e o frontend na porta `3000` juntos.
 
 App: [http://localhost:3000/trabalhofinaltcs/](http://localhost:3000/trabalhofinaltcs/)
 
