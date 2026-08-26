@@ -1,0 +1,9 @@
+model Certificado {
+  id                Int      @id @default(autoincrement())
+  idUsuario         Int
+  idCurso           Int
+  codigoVerificacao String
+  dataEmissao       DateTime @default(now())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}

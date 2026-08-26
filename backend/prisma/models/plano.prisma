@@ -1,0 +1,9 @@
+model Plano {
+  id           Int      @id @default(autoincrement())
+  nome         String
+  descricao    String
+  preco        Decimal
+  duracaoMeses Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}

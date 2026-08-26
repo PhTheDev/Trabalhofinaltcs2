@@ -1,0 +1,8 @@
+model Modulo {
+  id        Int      @id @default(autoincrement())
+  idCurso   Int
+  titulo    String
+  ordem     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

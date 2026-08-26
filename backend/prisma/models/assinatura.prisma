@@ -1,0 +1,10 @@
+model Assinatura {
+  id         Int       @id @default(autoincrement())
+  idUsuario  Int       @unique
+  idPlano    Int
+  dataInicio DateTime  @default(now())
+  dataFim    DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  
+}

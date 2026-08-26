@@ -1,0 +1,13 @@
+model ProgressoAula {
+  idUsuario     Int
+  idAula        Int
+  dataConclusao DateTime?
+  status        Status
+
+  @@id([idUsuario, idAula])
+}
+
+enum Status {
+  PENDENTE
+  CONCLUIDA
+}

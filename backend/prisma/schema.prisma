@@ -1,0 +1,12 @@
+// Schema principal: só infra (datasource + generator).
+// Models por domínio ficam em prisma/models/.
+
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}

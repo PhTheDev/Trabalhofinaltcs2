@@ -1,0 +1,8 @@
+model Trilha {
+  id          Int      @id @default(autoincrement())
+  titulo      String
+  descricao   String
+  idCategoria Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

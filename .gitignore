@@ -1,0 +1,32 @@
+# Dependencies
+node_modules
+
+# Builds
+dist
+dist-ssr
+build
+coverage
+
+# Secrets and local env
+.env
+.env.local
+.env.*.local
+
+# Databases
+*.db
+*.db-journal
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS / IDE
+.DS_Store
+.idea
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Generated
+backend/src/generated
+*.local

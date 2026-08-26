@@ -1,0 +1,11 @@
+model Aula {
+  id             Int      @id @default(autoincrement())
+  idModulo       Int
+  titulo         String
+  tipoConteudo   String
+  urlConteudo    String
+  duracaoMinutos Int
+  ordem          String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}

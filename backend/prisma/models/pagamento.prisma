@@ -1,0 +1,16 @@
+model Pagamento {
+  id                 Int             @id @default(autoincrement())
+  idAssinatura       Int
+  valorPago          Decimal
+  dataPagamento      DateTime
+  metodoPagamento    MetodoPagamento
+  idTransacaoGateway Int
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+}
+
+enum MetodoPagamento {
+  PIX
+  CREDITO
+  DEBITO
+}

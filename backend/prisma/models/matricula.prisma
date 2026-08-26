@@ -1,0 +1,9 @@
+model Matricula {
+  id            Int       @id @default(autoincrement())
+  idUsuario     Int
+  idCurso       Int
+  dataMatricula DateTime
+  dataConclusao DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
