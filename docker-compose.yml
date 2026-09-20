@@ -45,5 +45,19 @@ services:
     depends_on:
       - backend
 
+  mobile:
+    build:
+      context: ./mobile
+      dockerfile: Dockerfile
+    container_name: tcs_mobile
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      EXPO_PUBLIC_API_URL: http://localhost:8000/api/v1
+      CI: "1"
+    depends_on:
+      - backend
+
 volumes:
   postgres_data:

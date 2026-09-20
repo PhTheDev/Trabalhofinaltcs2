@@ -1,22 +1,17 @@
-FROM node:20-alpine
+FROM node:22-alpine
 
 WORKDIR /app
 
 # Instala dependências de sistema necessárias para o Prisma no Alpine
 RUN apk add --no-cache openssl
 
-# Copia manifestos de dependências
+# Copia manifestos de dependências e arquivos de schema do Prisma
 COPY package*.json ./
-
-# Instala todas as dependências
-RUN npm install
-
-# Copia arquivos do Prisma
 COPY prisma ./prisma
 COPY prisma.config.ts ./
 
-# Gera os artefatos do Prisma Client
-RUN npx prisma generate
+# Instala todas as dependências (já executa prisma generate via script postinstall)
+RUN npm install
 
 # Copia arquivos de configuração e código-fonte
 COPY tsconfig*.json ./

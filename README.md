@@ -6,7 +6,7 @@ Monorepo da plataforma de cursos: frontend React, backend NestJS e mobile React 
 Trabalhofinaltcs2/
   frontend/   # React + Vite + Bootstrap  (porta 3000)
   backend/    # NestJS + Prisma           (porta 8000)
-  mobile/     # React Native + Expo
+  mobile/     # React Native + Expo       (porta 8081)
 ```
 
 ## Pré-requisitos
@@ -17,13 +17,14 @@ Trabalhofinaltcs2/
 
 ## Como rodar com Docker (Recomendado)
 
-Para subir todos os serviços de uma vez (PostgreSQL, Backend e Frontend):
+Para subir todos os serviços de uma vez (PostgreSQL, Backend, Frontend e Mobile):
 
 ```bash
 docker compose up --build
 ```
 
 - **App web:** [http://localhost:3000/trabalhofinaltcs/](http://localhost:3000/trabalhofinaltcs/)
+- **App mobile (Web / Metro):** [http://localhost:8081](http://localhost:8081)
 - **Documentação Swagger (OpenAPI):** [http://localhost:8000/api/docs](http://localhost:8000/api/docs) (ou [/docs](http://localhost:8000/docs))
 - **OpenAPI Spec (JSON):** [http://localhost:8000/api/docs-json](http://localhost:8000/api/docs-json)
 - **API Base:** [http://localhost:8000/api/v1](http://localhost:8000/api/v1)

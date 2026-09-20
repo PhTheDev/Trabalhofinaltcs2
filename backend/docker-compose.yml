@@ -1,4 +1,4 @@
-# Nota: Para executar a stack completa (Postgres + Backend + Frontend), use o docker-compose.yml na raiz:
+# Nota: Para executar a stack completa (Postgres + Backend + Frontend + Mobile), use o docker-compose.yml na raiz:
 #   docker compose up --build
 # Este arquivo abaixo permanece caso queira rodar apenas o banco PostgreSQL isoladamente.
 
