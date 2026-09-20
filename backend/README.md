@@ -25,6 +25,26 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## Documentação da API (Swagger / OpenAPI)
+
+Com o backend em execução, a documentação interativa Swagger pode ser acessada em:
+- Interface Swagger UI: [http://localhost:8000/api/docs](http://localhost:8000/api/docs) ou [http://localhost:8000/docs](http://localhost:8000/docs)
+- Especificação OpenAPI (JSON): [http://localhost:8000/api/docs-json](http://localhost:8000/api/docs-json)
+
+## Execução via Docker
+
+Para rodar todo o ambiente via Docker Compose, use o comando a partir da raiz do repositório:
+
+```bash
+docker compose up --build
+```
+
+Ou para rodar apenas o banco PostgreSQL:
+
+```bash
+docker compose -f docker-compose.yml up -d postgres
+```
+
 ## Project setup
 
 ```bash

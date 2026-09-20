@@ -6,6 +6,7 @@ export default defineConfig({
   plugins: [react()],
   base: '/trabalhofinaltcs/',
   server: {
+    host: true,
     port: 3000,
     strictPort: true,
     proxy: {

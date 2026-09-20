@@ -1,4 +1,4 @@
-import { OmitType, PartialType } from '@nestjs/mapped-types';
+import { OmitType, PartialType } from '@nestjs/swagger';
 import { CreateTrilhaCursoDto } from './create-trilha-curso.dto';
 
 export class UpdateTrilhaCursoDto extends PartialType(

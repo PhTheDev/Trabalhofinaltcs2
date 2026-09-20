@@ -15,7 +15,22 @@ Trabalhofinaltcs2/
 - PostgreSQL na porta `5432` (usuário/senha `postgres`, banco `brincando`)
 - Expo Go no celular (Android/iOS) para o app mobile
 
-## Como rodar web + API
+## Como rodar com Docker (Recomendado)
+
+Para subir todos os serviços de uma vez (PostgreSQL, Backend e Frontend):
+
+```bash
+docker compose up --build
+```
+
+- **App web:** [http://localhost:3000/trabalhofinaltcs/](http://localhost:3000/trabalhofinaltcs/)
+- **Documentação Swagger (OpenAPI):** [http://localhost:8000/api/docs](http://localhost:8000/api/docs) (ou [/docs](http://localhost:8000/docs))
+- **OpenAPI Spec (JSON):** [http://localhost:8000/api/docs-json](http://localhost:8000/api/docs-json)
+- **API Base:** [http://localhost:8000/api/v1](http://localhost:8000/api/v1)
+
+O container do backend executa automaticamente as migrações do Prisma e o seed de dados demo.
+
+## Como rodar localmente sem Docker (web + API)
 
 Na raiz do monorepo:
 
@@ -26,7 +41,8 @@ npm run dev
 ```
 
 App web: [http://localhost:3000/trabalhofinaltcs/](http://localhost:3000/trabalhofinaltcs/)  
-API: [http://localhost:8000/api/v1](http://localhost:8000/api/v1)
+API: [http://localhost:8000/api/v1](http://localhost:8000/api/v1)  
+Documentação Swagger: [http://localhost:8000/api/docs](http://localhost:8000/api/docs)
 
 ## Como rodar o mobile
 
