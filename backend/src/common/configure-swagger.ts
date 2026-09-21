@@ -29,6 +29,7 @@ export const configureSwagger = (app: INestApplication): void => {
     .addTag('pagamentos', 'Registros financeiros e transações de pagamento')
     .addTag('certificados', 'Emissão e verificação de certificados de conclusão')
     .addTag('health', 'Status e saúde da API')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

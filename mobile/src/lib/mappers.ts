@@ -8,8 +8,6 @@ import type {
   IUsuario,
 } from '../types';
 
-const ADMIN_EMAIL = 'admin@plataforma.com';
-
 const NIVEL_FROM_API = {
   INICIANTE: 'Iniciante',
   INTERMEDIARIO: 'Intermediário',
@@ -39,6 +37,11 @@ const toIso = (value: unknown) => {
 
 const asRecord = (value: unknown) => value as Record<string, unknown>;
 
+const mapRole = (role: unknown): 'aluno' | 'admin' => {
+  const value = String(role ?? '').toUpperCase();
+  return value === 'ADMIN' ? 'admin' : 'aluno';
+};
+
 export const mapUsuario = (user: unknown): IUsuario => {
   const row = asRecord(user);
   return {
@@ -47,7 +50,7 @@ export const mapUsuario = (user: unknown): IUsuario => {
     email: String(row.email ?? ''),
     senhaHash: '',
     dataCadastro: toIso(row.createdAt),
-    role: String(row.email ?? '').toLowerCase() === ADMIN_EMAIL ? 'admin' : 'aluno',
+    role: mapRole(row.role),
   };
 };
 

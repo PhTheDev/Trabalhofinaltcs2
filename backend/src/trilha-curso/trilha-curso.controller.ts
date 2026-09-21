@@ -1,16 +1,20 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { Role } from '../generated/prisma/client';
 import { TrilhaCursoService } from './trilha-curso.service';
 import { CreateTrilhaCursoDto } from './dto/create-trilha-curso.dto';
 import { UpdateTrilhaCursoDto } from './dto/update-trilha-curso.dto';
 import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 
 @ApiTags('trilha-curso')
+@ApiBearerAuth()
 @Controller('trilha-curso')
 export class TrilhaCursoController {
   constructor(private readonly trilhaCursoService: TrilhaCursoService) {}
 
   @Post()
+  @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Vincular um curso a uma trilha' })
   @ApiResponse({ status: 201, description: 'Vínculo trilha-curso criado com sucesso' })
   create(@Body() createTrilhaCursoDto: CreateTrilhaCursoDto) {
@@ -38,6 +42,7 @@ export class TrilhaCursoController {
   }
 
   @Patch(':idTrilha/:idCurso')
+  @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Atualizar dados de um vínculo trilha-curso' })
   @ApiParam({ name: 'idTrilha', description: 'ID da trilha', type: Number })
   @ApiParam({ name: 'idCurso', description: 'ID do curso', type: Number })
@@ -52,6 +57,7 @@ export class TrilhaCursoController {
   }
 
   @Delete(':idTrilha/:idCurso')
+  @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Remover vínculo entre trilha e curso' })
   @ApiParam({ name: 'idTrilha', description: 'ID da trilha', type: Number })
   @ApiParam({ name: 'idCurso', description: 'ID do curso', type: Number })

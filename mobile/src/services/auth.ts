@@ -5,20 +5,29 @@ import { mapUsuario } from '../lib/mappers';
 
 const SESSION_KEY = 'ph_session';
 
+type AuthApiResponse = {
+  access_token: string;
+  usuario: unknown;
+};
+
 export const getSession = async (): Promise<ISession | null> => {
   try {
     const raw = await AsyncStorage.getItem(SESSION_KEY);
-    return raw ? (JSON.parse(raw) as ISession) : null;
+    if (!raw) return null;
+    const session = JSON.parse(raw) as ISession;
+    if (!session.accessToken) return null;
+    return session;
   } catch {
     return null;
   }
 };
 
-export const setSession = async (usuario: IUsuario) => {
+export const setSession = async (usuario: IUsuario, accessToken: string) => {
   const session: ISession = {
     id: usuario.id,
     nomeCompleto: usuario.nomeCompleto,
     role: usuario.role,
+    accessToken,
   };
   await AsyncStorage.setItem(SESSION_KEY, JSON.stringify(session));
   return session;
@@ -30,12 +39,12 @@ export const clearSession = async () => {
 
 export const login = async (email: string, senha: string) => {
   try {
-    const raw = await apiRequest('/auth/login', {
+    const raw = await apiRequest<AuthApiResponse>('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, senha }),
     });
-    const usuario = mapUsuario(raw);
-    const session = await setSession(usuario);
+    const usuario = mapUsuario(raw.usuario);
+    const session = await setSession(usuario, raw.access_token);
     return { ok: true as const, session };
   } catch (e) {
     return {
@@ -45,14 +54,18 @@ export const login = async (email: string, senha: string) => {
   }
 };
 
-export const cadastrarAluno = async (nomeCompleto: string, email: string, senha: string) => {
+export const cadastrarAluno = async (
+  nomeCompleto: string,
+  email: string,
+  senha: string,
+) => {
   try {
-    const raw = await apiRequest('/users', {
+    const raw = await apiRequest<AuthApiResponse>('/auth/register', {
       method: 'POST',
       body: JSON.stringify({ nome: nomeCompleto, email, senha }),
     });
-    const usuario = mapUsuario(raw);
-    const session = await setSession(usuario);
+    const usuario = mapUsuario(raw.usuario);
+    const session = await setSession(usuario, raw.access_token);
     return { ok: true as const, session };
   } catch (e) {
     return {

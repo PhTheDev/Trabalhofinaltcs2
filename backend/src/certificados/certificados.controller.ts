@@ -1,11 +1,12 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CertificadosService } from './certificados.service';
 import { CreateCertificadoDto } from './dto/create-certificado.dto';
 import { UpdateCertificadoDto } from './dto/update-certificado.dto';
 import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 
 @ApiTags('certificados')
+@ApiBearerAuth()
 @Controller('certificados')
 export class CertificadosController {
   constructor(private readonly certificadosService: CertificadosService) {}

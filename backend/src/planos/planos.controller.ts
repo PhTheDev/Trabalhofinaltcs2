@@ -1,16 +1,20 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { Role } from '../generated/prisma/client';
 import { PlanosService } from './planos.service';
 import { CreatePlanoDto } from './dto/create-plano.dto';
 import { UpdatePlanoDto } from './dto/update-plano.dto';
 import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 
 @ApiTags('planos')
+@ApiBearerAuth()
 @Controller('planos')
 export class PlanosController {
   constructor(private readonly planosService: PlanosService) {}
 
   @Post()
+  @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Criar um novo plano de assinatura' })
   @ApiResponse({ status: 201, description: 'Plano criado com sucesso' })
   create(@Body() createPlanoDto: CreatePlanoDto) {
@@ -34,6 +38,7 @@ export class PlanosController {
   }
 
   @Patch(':id')
+  @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Atualizar informações de um plano' })
   @ApiParam({ name: 'id', description: 'ID do plano', type: Number })
   @ApiResponse({ status: 200, description: 'Plano atualizado com sucesso' })
@@ -43,6 +48,7 @@ export class PlanosController {
   }
 
   @Delete(':id')
+  @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Remover um plano' })
   @ApiParam({ name: 'id', description: 'ID do plano', type: Number })
   @ApiResponse({ status: 200, description: 'Plano removido com sucesso' })

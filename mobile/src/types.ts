@@ -60,4 +60,5 @@ export type ISession = {
   id: number;
   nomeCompleto: string;
   role: 'aluno' | 'admin';
+  accessToken: string;
 };

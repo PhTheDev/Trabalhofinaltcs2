@@ -6,6 +6,26 @@ type Paginated<T> = {
   meta?: { totalPages?: number };
 };
 
+const SESSION_KEY = 'ph_session';
+
+const getAccessToken = (): string | null => {
+  try {
+    const raw = sessionStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    const session = JSON.parse(raw) as { accessToken?: string };
+    return session.accessToken ?? null;
+  } catch {
+    return null;
+  }
+};
+
+const clearSessionOnUnauthorized = () => {
+  sessionStorage.removeItem(SESSION_KEY);
+  if (window.location.pathname !== '/') {
+    window.location.assign('/');
+  }
+};
+
 const errorMessage = (body: unknown, status: number) => {
   if (body && typeof body === 'object' && 'message' in body) {
     const message = (body as { message: unknown }).message;
@@ -19,13 +39,25 @@ export const apiRequest = async <T>(
   path: string,
   init?: RequestInit,
 ): Promise<T> => {
+  const token = getAccessToken();
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(init?.headers as Record<string, string> | undefined),
+  };
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
   const res = await fetch(`${API_URL}${path}`, {
     ...init,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(init?.headers ?? {}),
-    },
+    headers,
   });
+
+  if (res.status === 401) {
+    clearSessionOnUnauthorized();
+    const body = await res.json().catch(() => null);
+    throw new Error(errorMessage(body, res.status));
+  }
 
   if (!res.ok) {
     const body = await res.json().catch(() => null);

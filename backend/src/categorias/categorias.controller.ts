@@ -1,16 +1,20 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { Role } from '../generated/prisma/client';
 import { CategoriasService } from './categorias.service';
 import { CreateCategoriaDto } from './dto/create-categoria.dto';
 import { UpdateCategoriaDto } from './dto/update-categoria.dto';
 import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 
 @ApiTags('categorias')
+@ApiBearerAuth()
 @Controller('categorias')
 export class CategoriasController {
   constructor(private readonly categoriasService: CategoriasService) {}
 
   @Post()
+  @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Criar uma nova categoria de cursos' })
   @ApiResponse({ status: 201, description: 'Categoria criada com sucesso' })
   create(@Body() createCategoriaDto: CreateCategoriaDto) {
@@ -34,6 +38,7 @@ export class CategoriasController {
   }
 
   @Patch(':id')
+  @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Atualizar uma categoria' })
   @ApiParam({ name: 'id', description: 'ID da categoria', type: Number })
   @ApiResponse({ status: 200, description: 'Categoria atualizada com sucesso' })
@@ -43,6 +48,7 @@ export class CategoriasController {
   }
 
   @Delete(':id')
+  @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Remover uma categoria' })
   @ApiParam({ name: 'id', description: 'ID da categoria', type: Number })
   @ApiResponse({ status: 200, description: 'Categoria removida com sucesso' })

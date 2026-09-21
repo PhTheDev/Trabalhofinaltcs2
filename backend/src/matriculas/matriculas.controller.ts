@@ -1,11 +1,12 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { MatriculasService } from './matriculas.service';
 import { CreateMatriculaDto } from './dto/create-matricula.dto';
 import { UpdateMatriculaDto } from './dto/update-matricula.dto';
 import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 
 @ApiTags('matriculas')
+@ApiBearerAuth()
 @Controller('matriculas')
 export class MatriculasController {
   constructor(private readonly matriculasService: MatriculasService) {}

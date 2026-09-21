@@ -2,29 +2,42 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
+import * as bcrypt from 'bcryptjs';
 import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 import { PaginatedResponse } from '../common/types/paginated-response';
-import { Prisma, Usuario } from '../generated/prisma/client';
+import { Prisma, Role, Usuario } from '../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+
+export type SafeUsuario = Omit<Usuario, 'senha'>;
 
 @Injectable()
 export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(dto: CreateUserDto) {
-    return this.prisma.usuario.create({ data: dto }).catch((error) => {
+  async create(dto: CreateUserDto): Promise<SafeUsuario> {
+    const senhaHash = await bcrypt.hash(dto.senha, 10);
+    try {
+      const user = await this.prisma.usuario.create({
+        data: {
+          email: dto.email,
+          nome: dto.nome,
+          senha: senhaHash,
+          role: dto.role ?? Role.ALUNO,
+        },
+      });
+      return this.omitSenha(user);
+    } catch (error) {
       this.rethrowUniqueEmail(error);
       throw error;
-    });
+    }
   }
 
   async findAll(
     query: PaginationQueryDto,
-  ): Promise<PaginatedResponse<Usuario>> {
+  ): Promise<PaginatedResponse<SafeUsuario>> {
     const { page, limit } = query;
     const skip = (page - 1) * limit;
 
@@ -38,7 +51,7 @@ export class UsersService {
     ]);
 
     return {
-      data,
+      data: data.map((user) => this.omitSenha(user)),
       meta: {
         page,
         limit,
@@ -48,42 +61,50 @@ export class UsersService {
     };
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<SafeUsuario> {
     const user = await this.prisma.usuario.findUnique({ where: { id } });
     if (!user) {
       throw new NotFoundException(`Usuario #${id} não encontrado!`);
     }
-    return user;
+    return this.omitSenha(user);
   }
 
   findByEmail(email: string) {
     return this.prisma.usuario.findUnique({ where: { email } });
   }
 
-  async login(email: string, senha: string) {
-    const user = await this.findByEmail(email);
-    if (!user || user.senha !== senha) {
-      throw new UnauthorizedException('E-mail ou senha incorretos.');
+  async update(id: number, dto: UpdateUserDto): Promise<SafeUsuario> {
+    await this.findOne(id);
+    const data: Prisma.UsuarioUpdateInput = {
+      email: dto.email,
+      nome: dto.nome,
+    };
+    if (dto.senha) {
+      data.senha = await bcrypt.hash(dto.senha, 10);
     }
-    return user;
-  }
-
-  async update(id: number, dto: UpdateUserDto) {
-    await this.findOne(id);
-    return this.prisma.usuario
-      .update({
+    if (dto.role) {
+      data.role = dto.role;
+    }
+    try {
+      const user = await this.prisma.usuario.update({
         where: { id },
-        data: dto,
-      })
-      .catch((error) => {
-        this.rethrowUniqueEmail(error);
-        throw error;
+        data,
       });
+      return this.omitSenha(user);
+    } catch (error) {
+      this.rethrowUniqueEmail(error);
+      throw error;
+    }
   }
 
-  async remove(id: number) {
+  async remove(id: number): Promise<void> {
     await this.findOne(id);
-    return this.prisma.usuario.delete({ where: { id } });
+    await this.prisma.usuario.delete({ where: { id } });
+  }
+
+  private omitSenha(user: Usuario): SafeUsuario {
+    const { senha: _senha, ...safe } = user;
+    return safe;
   }
 
   private rethrowUniqueEmail(error: unknown): void {

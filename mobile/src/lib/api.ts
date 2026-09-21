@@ -1,5 +1,6 @@
 import { Platform } from 'react-native';
 import Constants from 'expo-constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const hostFromExpo = Constants.expoConfig?.hostUri?.split(':')[0];
 
@@ -10,9 +11,26 @@ export const API_URL =
   process.env.EXPO_PUBLIC_API_URL ??
   `http://${hostFromExpo || fallbackHost}:8000/api/v1`;
 
+const SESSION_KEY = 'ph_session';
+
 type Paginated<T> = {
   data?: T[];
   meta?: { totalPages?: number };
+};
+
+const getAccessToken = async (): Promise<string | null> => {
+  try {
+    const raw = await AsyncStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    const session = JSON.parse(raw) as { accessToken?: string };
+    return session.accessToken ?? null;
+  } catch {
+    return null;
+  }
+};
+
+const clearSessionOnUnauthorized = async () => {
+  await AsyncStorage.removeItem(SESSION_KEY);
 };
 
 const errorMessage = (body: unknown, status: number) => {
@@ -28,13 +46,25 @@ export const apiRequest = async <T>(
   path: string,
   init?: RequestInit,
 ): Promise<T> => {
+  const token = await getAccessToken();
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(init?.headers as Record<string, string> | undefined),
+  };
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
   const res = await fetch(`${API_URL}${path}`, {
     ...init,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(init?.headers ?? {}),
-    },
+    headers,
   });
+
+  if (res.status === 401) {
+    await clearSessionOnUnauthorized();
+    const body = await res.json().catch(() => null);
+    throw new Error(errorMessage(body, res.status));
+  }
 
   if (!res.ok) {
     const body = await res.json().catch(() => null);

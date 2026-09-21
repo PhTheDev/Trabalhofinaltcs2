@@ -1,16 +1,20 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { Role } from '../generated/prisma/client';
 import { TrilhasService } from './trilhas.service';
 import { CreateTrilhaDto } from './dto/create-trilha.dto';
 import { UpdateTrilhaDto } from './dto/update-trilha.dto';
 import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 
 @ApiTags('trilhas')
+@ApiBearerAuth()
 @Controller('trilhas')
 export class TrilhasController {
   constructor(private readonly trilhasService: TrilhasService) {}
 
   @Post()
+  @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Criar uma nova trilha de aprendizado' })
   @ApiResponse({ status: 201, description: 'Trilha criada com sucesso' })
   create(@Body() createTrilhaDto: CreateTrilhaDto) {
@@ -34,6 +38,7 @@ export class TrilhasController {
   }
 
   @Patch(':id')
+  @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Atualizar dados de uma trilha' })
   @ApiParam({ name: 'id', description: 'ID da trilha', type: Number })
   @ApiResponse({ status: 200, description: 'Trilha atualizada com sucesso' })
@@ -43,6 +48,7 @@ export class TrilhasController {
   }
 
   @Delete(':id')
+  @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Remover uma trilha' })
   @ApiParam({ name: 'id', description: 'ID da trilha', type: Number })
   @ApiResponse({ status: 200, description: 'Trilha removida com sucesso' })

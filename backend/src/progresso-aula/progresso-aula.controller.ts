@@ -1,11 +1,12 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ProgressoAulaService } from './progresso-aula.service';
 import { CreateProgressoAulaDto } from './dto/create-progresso-aula.dto';
 import { UpdateProgressoAulaDto } from './dto/update-progresso-aula.dto';
 import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 
 @ApiTags('progresso-aula')
+@ApiBearerAuth()
 @Controller('progresso-aula')
 export class ProgressoAulaController {
   constructor(private readonly progressoAulaService: ProgressoAulaService) {}

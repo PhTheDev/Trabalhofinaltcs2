@@ -1,16 +1,20 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { Role } from '../generated/prisma/client';
 import { AulasService } from './aulas.service';
 import { CreateAulaDto } from './dto/create-aula.dto';
 import { UpdateAulaDto } from './dto/update-aula.dto';
 import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 
 @ApiTags('aulas')
+@ApiBearerAuth()
 @Controller('aulas')
 export class AulasController {
   constructor(private readonly aulasService: AulasService) {}
 
   @Post()
+  @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Cadastrar uma nova aula em um módulo' })
   @ApiResponse({ status: 201, description: 'Aula cadastrada com sucesso' })
   create(@Body() createAulaDto: CreateAulaDto) {
@@ -34,6 +38,7 @@ export class AulasController {
   }
 
   @Patch(':id')
+  @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Atualizar dados de uma aula' })
   @ApiParam({ name: 'id', description: 'ID da aula', type: Number })
   @ApiResponse({ status: 200, description: 'Aula atualizada com sucesso' })
@@ -43,6 +48,7 @@ export class AulasController {
   }
 
   @Delete(':id')
+  @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Remover uma aula' })
   @ApiParam({ name: 'id', description: 'ID da aula', type: Number })
   @ApiResponse({ status: 200, description: 'Aula removida com sucesso' })

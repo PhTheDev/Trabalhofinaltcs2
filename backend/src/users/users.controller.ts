@@ -12,23 +12,28 @@ import {
   Query,
 } from '@nestjs/common';
 import {
+  ApiBearerAuth,
   ApiOperation,
   ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { Role } from '../generated/prisma/client';
+import { Roles } from '../auth/decorators/roles.decorator';
 import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 
 @ApiTags('users')
+@ApiBearerAuth()
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Criar um novo usuário' })
+  @Roles(Role.ADMIN)
+  @ApiOperation({ summary: 'Criar um novo usuário (admin)' })
   @ApiResponse({ status: 201, description: 'Usuário cadastrado com sucesso' })
   @ApiResponse({ status: 409, description: 'E-mail já cadastrado' })
   create(@Body() dto: CreateUserDto) {
@@ -52,6 +57,7 @@ export class UsersController {
   }
 
   @Patch(':id')
+  @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Atualizar dados de um usuário' })
   @ApiParam({ name: 'id', description: 'ID do usuário', type: Number })
   @ApiResponse({ status: 200, description: 'Usuário atualizado com sucesso' })
@@ -65,6 +71,7 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @Roles(Role.ADMIN)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Remover um usuário' })
   @ApiParam({ name: 'id', description: 'ID do usuário', type: Number })

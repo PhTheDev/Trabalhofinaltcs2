@@ -1,16 +1,20 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { Role } from '../generated/prisma/client';
 import { CursosService } from './cursos.service';
 import { CreateCursoDto } from './dto/create-curso.dto';
 import { UpdateCursoDto } from './dto/update-curso.dto';
 import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 
 @ApiTags('cursos')
+@ApiBearerAuth()
 @Controller('cursos')
 export class CursosController {
   constructor(private readonly cursosService: CursosService) {}
 
   @Post()
+  @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Cadastrar um novo curso' })
   @ApiResponse({ status: 201, description: 'Curso cadastrado com sucesso' })
   create(@Body() createCursoDto: CreateCursoDto) {
@@ -34,6 +38,7 @@ export class CursosController {
   }
 
   @Patch(':id')
+  @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Atualizar informações de um curso' })
   @ApiParam({ name: 'id', description: 'ID do curso', type: Number })
   @ApiResponse({ status: 200, description: 'Curso atualizado com sucesso' })
@@ -43,6 +48,7 @@ export class CursosController {
   }
 
   @Delete(':id')
+  @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Remover um curso' })
   @ApiParam({ name: 'id', description: 'ID do curso', type: Number })
   @ApiResponse({ status: 200, description: 'Curso removido com sucesso' })

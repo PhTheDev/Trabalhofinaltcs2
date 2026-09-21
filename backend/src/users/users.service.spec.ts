@@ -1,8 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConflictException, NotFoundException } from '@nestjs/common';
+import * as bcrypt from 'bcryptjs';
 import { UsersService } from './users.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { Prisma } from '../generated/prisma/client';
+import { Prisma, Role } from '../generated/prisma/client';
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -30,12 +31,28 @@ describe('UsersService', () => {
     service = module.get(UsersService);
   });
 
-  it('creates a user', async () => {
+  it('creates a user with hashed password and omits senha', async () => {
     const dto = { email: 'a@b.com', nome: 'Ada', senha: 'Str0ng!Pass' };
-    prisma.usuario.create.mockResolvedValue({ id: 1, ...dto });
+    prisma.usuario.create.mockImplementation(async ({ data }) => ({
+      id: 1,
+      email: data.email,
+      nome: data.nome,
+      senha: data.senha,
+      role: data.role ?? Role.ALUNO,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }));
 
-    await expect(service.create(dto)).resolves.toEqual({ id: 1, ...dto });
-    expect(prisma.usuario.create).toHaveBeenCalledWith({ data: dto });
+    const result = await service.create(dto);
+
+    expect(result).not.toHaveProperty('senha');
+    expect(result.email).toBe(dto.email);
+    expect(prisma.usuario.create).toHaveBeenCalled();
+    const createdData = prisma.usuario.create.mock.calls[0][0].data;
+    expect(createdData.senha).not.toBe(dto.senha);
+    await expect(bcrypt.compare(dto.senha, createdData.senha)).resolves.toBe(
+      true,
+    );
   });
 
   it('throws ConflictException on duplicate email', async () => {
@@ -56,16 +73,28 @@ describe('UsersService', () => {
     await expect(service.findOne(99)).rejects.toBeInstanceOf(NotFoundException);
   });
 
-  it('returns paginated users', async () => {
-    const users = [{ id: 1, email: 'a@b.com', nome: 'Ada' }];
+  it('returns paginated users without senha', async () => {
+    const users = [
+      {
+        id: 1,
+        email: 'a@b.com',
+        nome: 'Ada',
+        senha: 'hash',
+        role: Role.ALUNO,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ];
     prisma.usuario.findMany.mockResolvedValue(users);
     prisma.usuario.count.mockResolvedValue(1);
 
-    await expect(
-      service.findAll({ page: 1, limit: 10 }),
-    ).resolves.toEqual({
-      data: users,
-      meta: { page: 1, limit: 10, total: 1, totalPages: 1 },
+    const result = await service.findAll({ page: 1, limit: 10 });
+    expect(result.data[0]).not.toHaveProperty('senha');
+    expect(result.meta).toEqual({
+      page: 1,
+      limit: 10,
+      total: 1,
+      totalPages: 1,
     });
   });
 });
