@@ -6,6 +6,14 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
  * Disponibiliza a interface gráfica em /api/docs e a especificação JSON em /api/docs-json.
  */
 export const configureSwagger = (app: INestApplication): void => {
+  const securitySchemeName = 'bearer';
+  const swaggerOptions = {
+    persistAuthorization: true,
+    tagsSorter: 'alpha',
+    operationsSorter: 'alpha',
+    security: [{ [securitySchemeName]: [] }],
+  } as const;
+
   const config = new DocumentBuilder()
     .setTitle('Plataforma de Cursos API')
     .setDescription(
@@ -29,22 +37,31 @@ export const configureSwagger = (app: INestApplication): void => {
     .addTag('pagamentos', 'Registros financeiros e transações de pagamento')
     .addTag('certificados', 'Emissão e verificação de certificados de conclusão')
     .addTag('health', 'Status e saúde da API')
-    .addBearerAuth()
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        in: 'header',
+        description: 'Insira o token JWT obtido no endpoint /auth/login.',
+      },
+      securitySchemeName,
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
 
   SwaggerModule.setup('api/docs', app, document, {
     customSiteTitle: 'Swagger - Plataforma de Cursos API',
-    swaggerOptions: {
-      persistAuthorization: true,
-      tagsSorter: 'alpha',
-      operationsSorter: 'alpha',
-    },
+    swaggerOptions,
   });
 
   // Também expõe em /docs para conveniência
   SwaggerModule.setup('docs', app, document, {
     customSiteTitle: 'Swagger - Plataforma de Cursos API',
+    swaggerOptions: {
+      persistAuthorization: true,
+      security: [{ [securitySchemeName]: [] }],
+    },
   });
 };
